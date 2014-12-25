@@ -1,4 +1,4 @@
-var myVersion = "0.48", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.49", myProductName = "Noderunner", myPort = 80;
 
 
 var fs = require ("fs");
@@ -6,7 +6,6 @@ var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
 var vm = require ("vm"); 
-var marked = require ("marked");
 
 var noderunnerStats = {
 	ctStarts: 0, whenLastStart: new Date (0),
@@ -17,11 +16,7 @@ var noderunnerStats = {
 var fnameStats = "prefs/stats.json";
 var fnameLocalStorage = "prefs/localStorage.json", localStorage = new Object ();
 
-var domainsPath = "domains/";
-var httpDefaultFilename = "index.html";
-
 var userScriptsPath = "scripts/";
-var userFilesPath = "files/";
 var startupScriptsFolderName = "startup";
 var everySecondScriptsFolderName = "everySecond";
 var everyMinuteScriptsFolderName = "everyMinute";
@@ -30,9 +25,7 @@ var overnightScriptsFolderName = "overnight";
 var webScriptsFolderName = "web";
 var minuteToRunHourlyScripts = 47;
 var hourToRunOvernightScripts = 1;
-
-var mdTemplatePath = "prefs/mdTemplate.txt";
-var urlDefaultTemplate = "http://fargo.io/code/noderunner/defaultmarkdowntemplate.txt";
+var userFilesPath = "files/";
 
 function sameDay (d1, d2) { 
 	//returns true if the two dates are on the same day
@@ -1002,6 +995,13 @@ function fsListObjects (path, callback) {
 	}
  
 
+function httpReadUrl (url, callback) {
+	request (url, function (error, response, body) {
+		if (!error && (response.statusCode == 200)) {
+			callback (body) 
+			}
+		});
+	}
 function fileExists (f, callback) {
 	var path = userFilesPath + f;
 	fs.exists (path, function (flExists) {
@@ -1023,42 +1023,6 @@ function writeWholeFile (f, data, callback) {
 	fsNewObject (path, data, undefined, undefined, function (err, dataAboutWrite) {
 		});
 	}
-function getMarkdownTemplate (callback) {
-	fs.readFile (mdTemplatePath, function (err, data) {
-		if (err) {
-			httpReadUrl (urlDefaultTemplate, function (s) {
-				fs.writeFile (mdTemplatePath, s, function (err) {
-					if (callback != undefined) {
-						callback (s);
-						}
-					});
-				});
-			}
-		else {
-			if (callback != undefined) {
-				callback (data.toString ());
-				}
-			}
-		});
-	}
-function checkPathForIllegalChars (path) {
-	function isIllegal (ch) {
-		if (isAlpha (ch) || isNumeric (ch)) {
-			return (false);
-			}
-		switch (ch) {
-			case "/": case "_": case "-": case ".":  case " ":
-				return (false);
-			}
-		return (true);
-		}
-	for (var i = 0; i < path.length; i++) {
-		if (isIllegal (path [i])) {
-			return (false);
-			}
-		}
-	return (true);
-	}
 function runUserScript (s, scriptName) {
 	
 	try {
@@ -1067,13 +1031,6 @@ function runUserScript (s, scriptName) {
 	catch (err) {
 		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
 		}
-	}
-function httpReadUrl (url, callback) {
-	request (url, function (error, response, body) {
-		if (!error && (response.statusCode == 200)) {
-			callback (body) 
-			}
-		});
 	}
 function readStats (fname, stats, callback) {
 	fs.readFile (fname, "utf8", function (err, data) {
@@ -1127,10 +1084,6 @@ function runScriptsInFolder (foldername, callback) {
 		});
 	}
 function handleHttpRequest (httpRequest, httpResponse) {
-	function return404 () {
-		httpResponse.writeHead (404, {"Content-Type": "text/plain"});
-		httpResponse.end ("The file was not found.");    
-		}
 	try {
 		var parsedUrl = urlpack.parse (httpRequest.url, true), host, port;
 		var lowercasepath = parsedUrl.pathname.toLowerCase (), now = new Date ();
@@ -1161,64 +1114,9 @@ function handleHttpRequest (httpRequest, httpResponse) {
 				httpResponse.writeHead (200, {"Content-Type": "text/plain", "Access-Control-Allow-Origin": "*"});
 				httpResponse.end (JSON.stringify (myStatus, undefined, 4));    
 				break;
-			default: //see if it's a path in the domains folder, if not 404
-				var f = domainsPath + host + parsedUrl.pathname;
-				if (checkPathForIllegalChars (f)) {
-					fs.stat (f, function (err, stats) {
-						if (err) {
-							return404 ();
-							}
-						else {
-							if (stats.isDirectory ()) {
-								if (!endsWith (f, "/")) {
-									f += "/";
-									}
-								f += "index.html";
-								}
-							fs.readFile (f, function (err, data) {
-								if (err) {
-									httpResponse.writeHead (500, {"Content-Type": "text/plain"});
-									httpResponse.end ("There was an error reading the file.");    
-									}
-								else {
-									var ext = stringLower (stringLastField (f, ".")), type = httpExt2MIME (ext);
-									console.log ("handleHttpRequest: f == " + f + ", type == " + type);
-									switch (ext) {
-										case "js":
-											try {
-												var val = eval (data.toString ());
-												httpResponse.writeHead (200, {"Content-Type": "text/html"});
-												httpResponse.end (val.toString ());    
-												}
-											catch (err) {
-												httpResponse.writeHead (500, {"Content-Type": "text/plain"});
-												httpResponse.end ("Error running " + parsedUrl.pathname + ": \"" + err.message + "\"");
-												}
-											break;
-										case "md":
-											getMarkdownTemplate (function (theTemplate) {
-												var mdtext = data.toString (), pagetable = new Object ();
-												pagetable.bodytext = marked (mdtext);
-												pagetable.title = stringLastField (f, "/");
-												var s = multipleReplaceAll (theTemplate, pagetable, false, "[%", "%]");
-												httpResponse.writeHead (200, {"Content-Type": "text/html"});
-												httpResponse.end (s);    
-												});
-											break;
-										default:
-											httpResponse.writeHead (200, {"Content-Type": type});
-											httpResponse.end (data);    
-											break;
-										}
-									}
-								});
-							}
-						});
-					}
-				else {
-					httpResponse.writeHead (500, {"Content-Type": "text/plain"});
-					httpResponse.end ("The file name contains illegal characters.");    
-					}
+			default:
+				httpResponse.writeHead (404, {"Content-Type": "text/plain"});
+				httpResponse.end ("The file was not found.");    
 				break;
 			}
 		}
@@ -1259,18 +1157,15 @@ function everyMinute () {
 	noderunnerStats.ctEveryMinute++;
 	writeStats (fnameStats, noderunnerStats);
 	writeStats (fnameLocalStorage, localStorage); 
-	
 	}
 function everySecond () {
 	var now = new Date ();
 	noderunnerStats.whenLastEverySecond = now;
 	noderunnerStats.ctEverySecond++;
 	runScriptsInFolder (everySecondScriptsFolderName);
-	
 	if (now.getSeconds () == 0) {
 		everyMinute ();
 		}
-	
 	//sleep until the next second
 		var ctmilliseconds = 1000 - (Number (new Date ().getMilliseconds ()) + 1000) % 1000;
 		setTimeout (everySecond, ctmilliseconds); 
@@ -1286,7 +1181,6 @@ function startup () {
 			writeStats (fnameStats, noderunnerStats);
 			runScriptsInFolder (startupScriptsFolderName, function () {
 				everySecond ();
-				http.createServer (handleHttpRequest).listen (myPort);
 				});
 			});
 		});
