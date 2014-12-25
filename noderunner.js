@@ -7,6 +7,10 @@ var urlpack = require ("url");
 var http = require ("http");
 var vm = require ("vm"); 
 
+var noderunnerPrefs = {
+	minuteToRunHourlyScripts: 47,
+	hourToRunOvernightScripts: 1
+	};
 var noderunnerStats = {
 	ctStarts: 0, whenLastStart: new Date (0),
 	ctStatsReadErrors: 0, ctStatsReads: 0, 
@@ -23,8 +27,6 @@ var everyMinuteScriptsFolderName = "everyMinute";
 var everyHourScriptsFolderName = "everyHour";
 var overnightScriptsFolderName = "overnight";
 var webScriptsFolderName = "web";
-var minuteToRunHourlyScripts = 47;
-var hourToRunOvernightScripts = 1;
 var userFilesPath = "files/";
 
 function sameDay (d1, d2) { 
@@ -1086,15 +1088,15 @@ function runScriptsInFolder (foldername, callback) {
 function handleHttpRequest (httpRequest, httpResponse) {
 	try {
 		var parsedUrl = urlpack.parse (httpRequest.url, true), host, port;
-		var lowercasepath = parsedUrl.pathname.toLowerCase (), now = new Date ();
+		var lowerpath = parsedUrl.pathname.toLowerCase (), now = new Date ();
 		//set host, port
 			host = httpRequest.headers.host;
 			if (stringContains (host, ":")) {
 				port = stringNthField (host, ":", 2);
 				host = stringNthField (host, ":", 1);
 				}
-		console.log ("Received request: " + httpRequest.url);
-		switch (lowercasepath) {
+		console.log (httpRequest.method + " " + host + ":" + port + " " + lowerpath);
+		switch (lowerpath) {
 			case "/version":
 				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
 				httpResponse.end (myVersion);    
@@ -1146,10 +1148,10 @@ function everyMinute () {
 	console.log ("everyMinute: " + now.toLocaleTimeString ());
 	runScriptsInFolder (everyMinuteScriptsFolderName);
 	
-	if (now.getMinutes () == minuteToRunHourlyScripts) {
+	if (now.getMinutes () == noderunnerPrefs.minuteToRunHourlyScripts) {
 		everyHour ();
 		}
-	if ((now.getMinutes () == 0) && (now.getHours () == hourToRunOvernightScripts)) {
+	if ((now.getMinutes () == 0) && (now.getHours () == noderunnerPrefs.hourToRunOvernightScripts)) {
 		overnight ();
 		}
 	
@@ -1181,6 +1183,7 @@ function startup () {
 			writeStats (fnameStats, noderunnerStats);
 			runScriptsInFolder (startupScriptsFolderName, function () {
 				everySecond ();
+				http.createServer (handleHttpRequest).listen (myPort);
 				});
 			});
 		});
