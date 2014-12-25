@@ -1,4 +1,4 @@
-var myVersion = "0.45", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.47", myProductName = "Noderunner", myPort = 80;
 
 
 var fs = require ("fs");
@@ -6,6 +6,7 @@ var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
 var vm = require ("vm"); 
+var marked = require ("marked");
 
 var noderunnerStats = {
 	ctStarts: 0, whenLastStart: new Date (0),
@@ -13,8 +14,8 @@ var noderunnerStats = {
 	whenLastEverySecond: new Date (),  whenLastEveryMinute: new Date (), whenLastEveryHour: new Date (), whenLastOvernight: new Date (),
 	ctEverySecond: 0, ctLastEveryMinute: 0, ctEveryHour: 0, ctOvernight: 0
 	};
-var fnameStats = "stats.json";
-var fnameLocalStorage = "localStorage.json", localStorage = new Object ();
+var fnameStats = "prefs/stats.json";
+var fnameLocalStorage = "prefs/localStorage.json", localStorage = new Object ();
 
 var domainsPath = "domains/";
 var httpDefaultFilename = "index.html";
@@ -1076,7 +1077,10 @@ function readStats (fname, stats, callback) {
 		});
 	}
 function writeStats (fname, stats) {
-	fs.writeFile (fname, jsonStringify (stats));
+	fsSureFilePath (fname, function () {
+		fs.writeFile (fname, jsonStringify (stats), function (err) {
+			});
+		});
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = userScriptsPath + foldername;
@@ -1112,8 +1116,14 @@ function handleHttpRequest (httpRequest, httpResponse) {
 		httpResponse.end ("The file was not found.");    
 		}
 	try {
-		var parsedUrl = urlpack.parse (httpRequest.url, true);
+		var parsedUrl = urlpack.parse (httpRequest.url, true), host, port;
 		var lowercasepath = parsedUrl.pathname.toLowerCase (), now = new Date ();
+		//set host, port
+			host = httpRequest.headers.host;
+			if (stringContains (host, ":")) {
+				port = stringNthField (host, ":", 2);
+				host = stringNthField (host, ":", 1);
+				}
 		console.log ("Received request: " + httpRequest.url);
 		switch (lowercasepath) {
 			case "/version":
@@ -1136,16 +1146,7 @@ function handleHttpRequest (httpRequest, httpResponse) {
 				httpResponse.end (JSON.stringify (myStatus, undefined, 4));    
 				break;
 			default: //see if it's a path in the domains folder, if not 404
-				var host, port;
-				//set host, port
-					host = httpRequest.headers.host;
-					if (stringContains (host, ":")) {
-						port = stringNthField (host, ":", 2);
-						host = stringNthField (host, ":", 1);
-						}
-				
 				var f = domainsPath + host + parsedUrl.pathname;
-				
 				if (checkPathForIllegalChars (f)) {
 					fs.stat (f, function (err, stats) {
 						if (err) {
@@ -1153,7 +1154,6 @@ function handleHttpRequest (httpRequest, httpResponse) {
 							}
 						else {
 							if (stats.isDirectory ()) {
-								console.log ("handleHttpRequest: " + f + " is a folder.");
 								if (!endsWith (f, "/")) {
 									f += "/";
 									}
@@ -1165,19 +1165,25 @@ function handleHttpRequest (httpRequest, httpResponse) {
 									httpResponse.end ("There was an error reading the file.");    
 									}
 								else {
-									var ext = stringLastField (f, "."), type = httpExt2MIME (ext);
+									var ext = stringLower (stringLastField (f, ".")), type = httpExt2MIME (ext);
 									console.log ("handleHttpRequest: f == " + f + ", type == " + type);
-									switch (type) {
-										case "application/javascript":
+									switch (ext) {
+										case "js":
 											try {
 												var val = eval (data.toString ());
-												httpResponse.writeHead (200, {"Content-Type": "text/plain"});
+												httpResponse.writeHead (200, {"Content-Type": "text/html"});
 												httpResponse.end (val.toString ());    
 												}
 											catch (err) {
 												httpResponse.writeHead (500, {"Content-Type": "text/plain"});
 												httpResponse.end ("Error running " + parsedUrl.pathname + ": \"" + err.message + "\"");
 												}
+											break;
+										case "md":
+											var mdtext = data.toString ();
+											console.log ("Markdown text == " + mdtext);
+											httpResponse.writeHead (200, {"Content-Type": "text/html"});
+											httpResponse.end (marked (mdtext));    
 											break;
 										default:
 											httpResponse.writeHead (200, {"Content-Type": type});
@@ -1194,13 +1200,6 @@ function handleHttpRequest (httpRequest, httpResponse) {
 					httpResponse.end ("The file name contains illegal characters.");    
 					}
 				break;
-				
-				
-				
-				
-				
-				
-				
 			}
 		}
 	catch (tryError) {
