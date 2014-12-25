@@ -1135,7 +1135,7 @@ function handleHttpRequest (httpRequest, httpResponse) {
 				httpResponse.writeHead (200, {"Content-Type": "text/plain", "Access-Control-Allow-Origin": "*"});
 				httpResponse.end (JSON.stringify (myStatus, undefined, 4));    
 				break;
-			default: //see if it's in the scripts folder, if not 404
+			default: //see if it's a path in the domains folder, if not 404
 				var host, port;
 				//set host, port
 					host = httpRequest.headers.host;
