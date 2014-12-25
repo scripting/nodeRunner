@@ -1,4 +1,4 @@
-var myVersion = "0.47", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.48", myProductName = "Noderunner", myPort = 80;
 
 
 var fs = require ("fs");
@@ -30,6 +30,9 @@ var overnightScriptsFolderName = "overnight";
 var webScriptsFolderName = "web";
 var minuteToRunHourlyScripts = 47;
 var hourToRunOvernightScripts = 1;
+
+var mdTemplatePath = "prefs/mdTemplate.txt";
+var urlDefaultTemplate = "http://fargo.io/code/noderunner/defaultmarkdowntemplate.txt";
 
 function sameDay (d1, d2) { 
 	//returns true if the two dates are on the same day
@@ -1020,9 +1023,24 @@ function writeWholeFile (f, data, callback) {
 	fsNewObject (path, data, undefined, undefined, function (err, dataAboutWrite) {
 		});
 	}
-
-
-
+function getMarkdownTemplate (callback) {
+	fs.readFile (mdTemplatePath, function (err, data) {
+		if (err) {
+			httpReadUrl (urlDefaultTemplate, function (s) {
+				fs.writeFile (mdTemplatePath, s, function (err) {
+					if (callback != undefined) {
+						callback (s);
+						}
+					});
+				});
+			}
+		else {
+			if (callback != undefined) {
+				callback (data.toString ());
+				}
+			}
+		});
+	}
 function checkPathForIllegalChars (path) {
 	function isIllegal (ch) {
 		if (isAlpha (ch) || isNumeric (ch)) {
@@ -1108,8 +1126,6 @@ function runScriptsInFolder (foldername, callback) {
 			});
 		});
 	}
-
-
 function handleHttpRequest (httpRequest, httpResponse) {
 	function return404 () {
 		httpResponse.writeHead (404, {"Content-Type": "text/plain"});
@@ -1180,10 +1196,14 @@ function handleHttpRequest (httpRequest, httpResponse) {
 												}
 											break;
 										case "md":
-											var mdtext = data.toString ();
-											console.log ("Markdown text == " + mdtext);
-											httpResponse.writeHead (200, {"Content-Type": "text/html"});
-											httpResponse.end (marked (mdtext));    
+											getMarkdownTemplate (function (theTemplate) {
+												var mdtext = data.toString (), pagetable = new Object ();
+												pagetable.bodytext = marked (mdtext);
+												pagetable.title = stringLastField (f, "/");
+												var s = multipleReplaceAll (theTemplate, pagetable, false, "[%", "%]");
+												httpResponse.writeHead (200, {"Content-Type": "text/html"});
+												httpResponse.end (s);    
+												});
 											break;
 										default:
 											httpResponse.writeHead (200, {"Content-Type": type});
@@ -1207,6 +1227,7 @@ function handleHttpRequest (httpRequest, httpResponse) {
 		httpResponse.end (tryError.message);    
 		}
 	}
+
 function overnight () {
 	var now = new Date ();
 	console.log ("Running overnight scripts.");
@@ -1221,7 +1242,7 @@ function everyHour () {
 	noderunnerStats.ctEveryHour++;
 	runScriptsInFolder (everyHourScriptsFolderName);
 	}
-function everyMinute (callback) {
+function everyMinute () {
 	var now = new Date ();
 	console.log ("");
 	console.log ("everyMinute: " + now.toLocaleTimeString ());
@@ -1239,12 +1260,7 @@ function everyMinute (callback) {
 	writeStats (fnameStats, noderunnerStats);
 	writeStats (fnameLocalStorage, localStorage); 
 	
-	
-	if (callback != undefined) {
-		callback ();
-		}
 	}
-
 function everySecond () {
 	var now = new Date ();
 	noderunnerStats.whenLastEverySecond = now;
@@ -1260,17 +1276,22 @@ function everySecond () {
 		setTimeout (everySecond, ctmilliseconds); 
 	}
 
-readStats (fnameLocalStorage, localStorage, function () {
-	readStats (fnameStats, noderunnerStats, function () {
-		var now = new Date ();
-		console.log (myProductName + " v" + myVersion + ".");
-		noderunnerStats.ctStarts++;
-		noderunnerStats.whenLastStart = now;
-		writeStats (fnameStats, noderunnerStats);
-		runScriptsInFolder (startupScriptsFolderName, function () {
-			everySecond ();
-			http.createServer (handleHttpRequest).listen (myPort);
+function startup () {
+	readStats (fnameLocalStorage, localStorage, function () {
+		readStats (fnameStats, noderunnerStats, function () {
+			var now = new Date ();
+			console.log (myProductName + " v" + myVersion + ".");
+			noderunnerStats.ctStarts++;
+			noderunnerStats.whenLastStart = now;
+			writeStats (fnameStats, noderunnerStats);
+			runScriptsInFolder (startupScriptsFolderName, function () {
+				everySecond ();
+				http.createServer (handleHttpRequest).listen (myPort);
+				});
 			});
 		});
-	});
+	}
+startup ();
+
+
 
