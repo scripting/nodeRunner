@@ -1,4 +1,4 @@
-var myVersion = "0.50", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.51", myProductName = "Noderunner", myPort = 80;
 
 
 var fs = require ("fs");
@@ -8,8 +8,8 @@ var http = require ("http");
 var vm = require ("vm"); 
 
 var noderunnerPrefs = {
-	minuteToRunHourlyScripts: 47,
-	hourToRunOvernightScripts: 1
+	minuteToRunHourlyScripts: 0,
+	hourToRunOvernightScripts: 0
 	};
 var noderunnerStats = {
 	ctStarts: 0, whenLastStart: new Date (0),
@@ -998,43 +998,36 @@ function fsListObjects (path, callback) {
 	}
  
 
-function httpReadUrl (url, callback) {
-	request (url, function (error, response, body) {
-		if (!error && (response.statusCode == 200)) {
-			callback (body) 
-			}
-		});
-	}
-function fileExists (f, callback) {
-	var path = userFilesPath + f;
-	fs.exists (path, function (flExists) {
-		callback (flExists);
-		});
-	}
-function readWholeFile (f, callback) {
-	var path = userFilesPath + f;
-	fsSureFilePath (path, function () {
-		fsGetObject (path, function (error, data) {
-			if (callback != undefined) {
-				callback (error, data.Body);
+//functions that are useful to scripts run from one of the folders
+	function httpReadUrl (url, callback) {
+		request (url, function (error, response, body) {
+			if (!error && (response.statusCode == 200)) {
+				callback (body) 
 				}
 			});
-		});
-	}
-function writeWholeFile (f, data, callback) {
-	var path = userFilesPath + f;
-	fsNewObject (path, data, undefined, undefined, function (err, dataAboutWrite) {
-		});
-	}
-function runUserScript (s, scriptName) {
-	
-	try {
-		eval (s);
 		}
-	catch (err) {
-		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
+	function fileExists (f, callback) {
+		var path = userFilesPath + f;
+		fs.exists (path, function (flExists) {
+			callback (flExists);
+			});
 		}
-	}
+	function readWholeFile (f, callback) {
+		var path = userFilesPath + f;
+		fsSureFilePath (path, function () {
+			fsGetObject (path, function (error, data) {
+				if (callback != undefined) {
+					callback (error, data.Body);
+					}
+				});
+			});
+		}
+	function writeWholeFile (f, data, callback) {
+		var path = userFilesPath + f;
+		fsNewObject (path, data, undefined, undefined, function (err, dataAboutWrite) {
+			});
+		}
+
 function writeStats (fname, stats) {
 	fsSureFilePath (fname, function () {
 		fs.writeFile (fname, jsonStringify (stats), function (err) {
@@ -1057,6 +1050,15 @@ function readStats (fname, stats, callback) {
 			callback ();
 			}
 		});
+	}
+function runUserScript (s, scriptName) {
+	
+	try {
+		eval (s);
+		}
+	catch (err) {
+		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
+		}
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = userScriptsPath + foldername;
