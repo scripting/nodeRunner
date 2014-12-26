@@ -63,7 +63,7 @@ var userFilesPath = "files/";
 				return (val);
 				break;
 			case "number":
-				if (val == 1) {
+				if (val != 0) {
 					return (true);
 					}
 				break;
