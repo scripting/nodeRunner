@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-var myVersion = "0.52", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.53", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -28,6 +28,7 @@ var urlpack = require ("url");
 var http = require ("http");
 
 var noderunnerPrefs = {
+	myPort: 80,
 	secondToRunEveryMinuteScripts: 0,
 	minuteToRunHourlyScripts: 0,
 	hourToRunOvernightScripts: 0
@@ -181,20 +182,27 @@ function writeStats (fname, stats) {
 			});
 		});
 	}
-function readStats (fname, stats, callback) {
-	fs.readFile (fname, function (err, data) {
-		if (err) {
-			writeStats (fname, stats);
+function readStats (f, stats, callback) {
+	fs.exists (f, function (flExists) {
+		if (flExists) {
+			fs.readFile (f, function (err, data) {
+				if (err) {
+					console.log ("readStats: error reading file " + f + " == " + err.message)
+					}
+				else {
+					var storedStats = JSON.parse (data.toString ());
+					for (var x in storedStats) {
+						stats [x] = storedStats [x];
+						}
+					writeStats (f, stats);
+					}
+				if (callback != undefined) {
+					callback ();
+					}
+				});
 			}
 		else {
-			var storedStats = JSON.parse (data.toString ());
-			for (var x in storedStats) {
-				stats [x] = storedStats [x];
-				}
 			writeStats (fname, stats);
-			}
-		if (callback != undefined) {
-			callback ();
 			}
 		});
 	}
@@ -337,7 +345,7 @@ function startup () {
 				writeStats (fnameStats, noderunnerStats);
 				runScriptsInFolder (startupScriptsFolderName, function () {
 					everySecond ();
-					http.createServer (handleHttpRequest).listen (myPort);
+					http.createServer (handleHttpRequest).listen (noderunnerPrefs.myPort);
 					});
 				});
 			});
