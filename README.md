@@ -24,7 +24,7 @@ There's another folder called files, which are accessed through two routines pro
 #### Why did you develop it?
 I need it.
 #### How do you know it's useful?
-This is an adaptation of a couple of core features in Frontier, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
+This is an adaptation of a core feature in <a href="http://hellofrontier.com/">Frontier</a>, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
 
 #### JavaScript sample code
 
