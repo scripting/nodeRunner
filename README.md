@@ -17,7 +17,7 @@ They share data through a structure called localStorage, which works more or les
 
 It automatically creates all the folders it needs when it boots up.
 
-There's another folder called files, which are accessed through two routines provided by Noderunner: readWholeFile and writeWholeFile. I'll provide examples, or you can read the code. ;-)
+There's another folder called files, which are accessed through three routines provided by Noderunner: fileExists, readWholeFile and writeWholeFile. I'll provide examples, or you can read the code. ;-)
 #### Why folders?
 I like Dropbox. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or easily moved. With folders, I can manage my scripts from any of my Dropbox-capable computers, which includes my desktop, laptop, tablet and smartphone. 
 Node.js plus Dropbox-managed folder structures is an incredible combination of technologies in 2015. BTW, when I say Dropbox, I mean all manner of systems that do more or less the same thing, synchronizing folders across devices. 
