@@ -7,6 +7,7 @@ var urlpack = require ("url");
 var http = require ("http");
 
 var noderunnerPrefs = {
+	secondToRunEveryMinuteScripts: 0,
 	minuteToRunHourlyScripts: 0,
 	hourToRunOvernightScripts: 0
 	};
@@ -296,7 +297,7 @@ function everySecond () {
 	noderunnerStats.whenLastEverySecond = now;
 	noderunnerStats.ctEverySecond++;
 	runScriptsInFolder (everySecondScriptsFolderName);
-	if (now.getSeconds () == 0) {
+	if (now.getSeconds () == noderunnerPrefs.secondToRunEveryMinuteScripts) {
 		everyMinute ();
 		}
 	//sleep until the next second
