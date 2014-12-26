@@ -103,6 +103,35 @@ var userFilesPath = "files/";
 			}
 		return (true);
 		}
+	function stringContains (s, whatItMightContain, flUnicase) { 
+		if (flUnicase == undefined) {
+			flUnicase = true;
+			}
+		if (flUnicase) {
+			s = s.toLowerCase ();
+			whatItMightContain = whatItMightContain.toLowerCase ();
+			}
+		return (s.indexOf (whatItMightContain) != -1);
+		}
+	function stringCountFields (s, chdelim) {
+		var ct = 1;
+		if (s.length == 0) {
+			return (0);
+			}
+		for (var i = 0; i < s.length; i++) {
+			if (s [i] == chdelim) {
+				ct++;
+				}
+			}
+		return (ct)
+		}
+	function stringNthField (s, chdelim, n) {
+		var splits = s.split (chdelim);
+		if (splits.length >= n) {
+			return splits [n-1];
+			}
+		return ("");
+		}
 	function fsSureFilePath (path, callback) { 
 		var splits = path.split ("/"), path = "";
 		if (splits.length > 0) {
@@ -265,17 +294,6 @@ function handleHttpRequest (httpRequest, httpResponse) {
 			case "/now": 
 				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
 				httpResponse.end (now.toString ());    
-				break;
-			case "/status": 
-				var myStatus = {
-					version: myVersion, 
-					now: now.toUTCString (), 
-					whenServerStart: new Date (serverStats.whenServerStart).toUTCString (), 
-					hits: serverStats.ctHits, 
-					hitsToday: serverStats.ctHitsToday
-					};
-				httpResponse.writeHead (200, {"Content-Type": "text/plain", "Access-Control-Allow-Origin": "*"});
-				httpResponse.end (JSON.stringify (myStatus, undefined, 4));    
 				break;
 			default:
 				httpResponse.writeHead (404, {"Content-Type": "text/plain"});
