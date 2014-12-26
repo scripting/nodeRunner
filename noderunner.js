@@ -1,4 +1,4 @@
-var myVersion = "0.49", myProductName = "Noderunner", myPort = 80;
+var myVersion = "0.50", myProductName = "Noderunner", myPort = 80;
 
 
 var fs = require ("fs");
@@ -17,8 +17,9 @@ var noderunnerStats = {
 	whenLastEverySecond: new Date (),  whenLastEveryMinute: new Date (), whenLastEveryHour: new Date (), whenLastOvernight: new Date (),
 	ctEverySecond: 0, ctLastEveryMinute: 0, ctEveryHour: 0, ctOvernight: 0
 	};
-var fnameStats = "prefs/stats.json";
-var fnameLocalStorage = "prefs/localStorage.json", localStorage = new Object ();
+var localStorage = {
+	};
+var fnameStats = "prefs/stats.json", fnamePrefs  = "prefs/prefs.json",  fnameLocalStorage = "prefs/localStorage.json";
 
 var userScriptsPath = "scripts/";
 var startupScriptsFolderName = "startup";
@@ -1034,29 +1035,27 @@ function runUserScript (s, scriptName) {
 		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
 		}
 	}
-function readStats (fname, stats, callback) {
-	fs.readFile (fname, "utf8", function (err, data) {
-		var dataAboutRead = {
-			Body: data
-			};
-		if (!err) {
-			var storedPrefs = JSON.parse (dataAboutRead.Body);
-			for (var x in storedPrefs) {
-				stats [x] = storedPrefs [x];
-				}
-			if (stats.ctStatsReads != undefined) {
-				stats.ctStatsReads++;
-				}
-			}
-		if (callback != undefined) {
-			callback ();
-			}
-		});
-	}
 function writeStats (fname, stats) {
 	fsSureFilePath (fname, function () {
 		fs.writeFile (fname, jsonStringify (stats), function (err) {
 			});
+		});
+	}
+function readStats (fname, stats, callback) {
+	fs.readFile (fname, function (err, data) {
+		if (err) {
+			writeStats (fname, stats);
+			}
+		else {
+			var storedStats = JSON.parse (data.toString ());
+			for (var x in storedStats) {
+				stats [x] = storedStats [x];
+				}
+			writeStats (fname, stats);
+			}
+		if (callback != undefined) {
+			callback ();
+			}
 		});
 	}
 function runScriptsInFolder (foldername, callback) {
@@ -1174,16 +1173,18 @@ function everySecond () {
 	}
 
 function startup () {
-	readStats (fnameLocalStorage, localStorage, function () {
-		readStats (fnameStats, noderunnerStats, function () {
-			var now = new Date ();
-			console.log (myProductName + " v" + myVersion + ".");
-			noderunnerStats.ctStarts++;
-			noderunnerStats.whenLastStart = now;
-			writeStats (fnameStats, noderunnerStats);
-			runScriptsInFolder (startupScriptsFolderName, function () {
-				everySecond ();
-				http.createServer (handleHttpRequest).listen (myPort);
+	readStats (fnamePrefs, noderunnerPrefs, function () {
+		readStats (fnameLocalStorage, localStorage, function () {
+			readStats (fnameStats, noderunnerStats, function () {
+				var now = new Date ();
+				console.log (myProductName + " v" + myVersion + ".");
+				noderunnerStats.ctStarts++;
+				noderunnerStats.whenLastStart = now;
+				writeStats (fnameStats, noderunnerStats);
+				runScriptsInFolder (startupScriptsFolderName, function () {
+					everySecond ();
+					http.createServer (handleHttpRequest).listen (myPort);
+					});
 				});
 			});
 		});
