@@ -1,26 +1,26 @@
 //The MIT License (MIT)
+	
+	//Copyright (c) 2014 Dave Winer
+	
+	//Permission is hereby granted, free of charge, to any person obtaining a copy
+	//of this software and associated documentation files (the "Software"), to deal
+	//in the Software without restriction, including without limitation the rights
+	//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	//copies of the Software, and to permit persons to whom the Software is
+	//furnished to do so, subject to the following conditions:
+	
+	//The above copyright notice and this permission notice shall be included in all
+	//copies or substantial portions of the Software.
+	
+	//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	//SOFTWARE.
 
-//Copyright (c) 2014 Dave Winer
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-
-var myVersion = "0.53", myProductName = "Noderunner";
+var myVersion = "0.54", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -51,6 +51,9 @@ var everyHourScriptsFolderName = "everyHour";
 var overnightScriptsFolderName = "overnight";
 var webScriptsFolderName = "web";
 var userFilesPath = "files/";
+
+var lastLocalStorageJson;
+
 
 //routines from utils.js, fs.js
 	function getBoolean (val) {  
@@ -131,6 +134,16 @@ var userFilesPath = "files/";
 			return splits [n-1];
 			}
 		return ("");
+		}
+	function stringDelete (s, ix, ct) {
+		var start = ix - 1;
+		var end = (ix + ct) - 1;
+		var s1 = s.substr (0, start);
+		var s2 = s.substr (end);
+		return (s1 + s2);
+		}
+	function stringMid (s, ix, len) {
+		return (s.substr (ix-1, len));
 		}
 	function fsSureFilePath (path, callback) { 
 		var splits = path.split ("/"), path = "";
@@ -235,6 +248,13 @@ function readStats (f, stats, callback) {
 			}
 		});
 	}
+function writeLocalStorageIfChanged () {
+	var s = jsonStringify (localStorage);
+	if (s != lastLocalStorageJson) {
+		lastLocalStorageJson = s;
+		writeStats (fnameLocalStorage, localStorage); 
+		}
+	}
 function runUserScript (s, scriptName) {
 	try {
 		eval (s);
@@ -285,7 +305,7 @@ function handleHttpRequest (httpRequest, httpResponse) {
 				port = stringNthField (host, ":", 2);
 				host = stringNthField (host, ":", 1);
 				}
-		console.log (httpRequest.method + " " + host + ":" + port + " " + lowerpath);
+		console.log (now.toLocaleTimeString () + " " + httpRequest.method + " " + host + ":" + port + " " + lowerpath);
 		switch (lowerpath) {
 			case "/version":
 				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
@@ -294,6 +314,14 @@ function handleHttpRequest (httpRequest, httpResponse) {
 			case "/now": 
 				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
 				httpResponse.end (now.toString ());    
+				break;
+			case "/status": 
+				var status = {
+					prefs: noderunnerPrefs,
+					status: noderunnerStats
+					}
+				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
+				httpResponse.end (jsonStringify (status));    
 				break;
 			default:
 				httpResponse.writeHead (404, {"Content-Type": "text/plain"});
@@ -337,7 +365,6 @@ function everyMinute () {
 	noderunnerStats.whenLastEveryMinute = now;
 	noderunnerStats.ctEveryMinute++;
 	writeStats (fnameStats, noderunnerStats);
-	writeStats (fnameLocalStorage, localStorage); 
 	}
 function everySecond () {
 	var now = new Date ();
@@ -347,6 +374,7 @@ function everySecond () {
 	if (now.getSeconds () == noderunnerPrefs.secondToRunEveryMinuteScripts) {
 		everyMinute ();
 		}
+	writeLocalStorageIfChanged ();
 	//sleep until the next second
 		var ctmilliseconds = 1000 - (Number (new Date ().getMilliseconds ()) + 1000) % 1000;
 		setTimeout (everySecond, ctmilliseconds); 
@@ -355,6 +383,7 @@ function everySecond () {
 function startup () {
 	readStats (fnamePrefs, noderunnerPrefs, function () {
 		readStats (fnameLocalStorage, localStorage, function () {
+			lastLocalStorageJson = jsonStringify (localStorage);
 			readStats (fnameStats, noderunnerStats, function () {
 				var now = new Date ();
 				console.log (myProductName + " v" + myVersion + ".");
