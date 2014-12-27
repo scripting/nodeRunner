@@ -231,7 +231,7 @@ function readStats (f, stats, callback) {
 				});
 			}
 		else {
-			writeStats (fname, stats);
+			writeStats (f, stats);
 			}
 		});
 	}
