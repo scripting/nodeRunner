@@ -16,4 +16,3 @@ fileExists (f, function (flExists) {
 		console.log ("Just wrote " + 0 + " to " + f + ".");
 		}
 	});
-writeWholeFile ("test.txt", new Date ());
