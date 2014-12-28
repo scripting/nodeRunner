@@ -1,3 +1,3 @@
 
-console.log ("Hello world."); //the simplest script
+console.log ("Hello world.");
 
