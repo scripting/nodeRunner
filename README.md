@@ -6,7 +6,7 @@ Noderunner
 It was written by <a href="http://scripting.com/">Dave Winer</a>, and is the first of a series of "server snacks" that will come out in early 2015. 
 
 #### How it works
-Copy noderunner.js to a folder with a single sub-folder: scripts. 
+<img src="http://scripting.com/2014/12/27/snacks.png" width="145" height="143" border="0" style="float: right; padding-left: 25px; padding-bottom: 10px; padding-top: 10px; padding-right: 15px;" alt="A picture named snacks.png">Copy noderunner.js to a folder with a single sub-folder: scripts. 
 In scripts, there are four sub-folders, everySecond, everyMinute, everyHour, overnight and startup. You can use the examples in the scripts folder here as examples to help you get started.
 
 Any file with a .js extension in those folders are loaded and run when it's their time. 
