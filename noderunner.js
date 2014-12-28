@@ -20,7 +20,7 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.54", myProductName = "Noderunner";
+var myVersion = "0.55", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -145,6 +145,35 @@ var lastLocalStorageJson;
 	function stringMid (s, ix, len) {
 		return (s.substr (ix-1, len));
 		}
+	function padWithZeros (num, ctplaces) { 
+		var s = num.toString ();
+		while (s.length < ctplaces) {
+			s = "0" + s;
+			}
+		return (s);
+		}
+	function getDatePath (theDate, flLastSeparator) {
+		if (theDate == undefined) {
+			theDate = new Date ();
+			}
+		else {
+			theDate = new Date (theDate); //8/12/14 by DW -- make sure it's a date type
+			}
+		if (flLastSeparator == undefined) {
+			flLastSeparator = true;
+			}
+		
+		var month = padWithZeros (theDate.getMonth () + 1, 2);
+		var day = padWithZeros (theDate.getDate (), 2);
+		var year = theDate.getFullYear ();
+		
+		if (flLastSeparator) {
+			return (year + "/" + month + "/" + day + "/");
+			}
+		else {
+			return (year + "/" + month + "/" + day);
+			}
+		}
 	function fsSureFilePath (path, callback) { 
 		var splits = path.split ("/"), path = "";
 		if (splits.length > 0) {
@@ -194,10 +223,8 @@ var lastLocalStorageJson;
 		var path = userFilesPath + f;
 		fsSureFilePath (path, function () {
 			fs.readFile (path, function (err, data) {
-				if (!err) {
-					if (callback != undefined) {
-						callback (err, data);
-						}
+				if (callback != undefined) {
+					callback (err, data);
 					}
 				});
 			});
@@ -206,8 +233,8 @@ var lastLocalStorageJson;
 		var path = userFilesPath + f;
 		fsSureFilePath (path, function () {
 			fs.writeFile (path, data, function (err) {
-				if (err) {
-					console.log ("writeWholeFile: error == " + err.message);
+				if (callback != undefined) {
+					callback (err);
 					}
 				});
 			});
@@ -291,8 +318,6 @@ function runScriptsInFolder (foldername, callback) {
 				callback ();
 				}
 			});
-		
-		
 		});
 	}
 function handleHttpRequest (httpRequest, httpResponse) {
