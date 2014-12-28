@@ -11,11 +11,11 @@ function sendTweet (s) { //doesn't do anything for now -- 12/27/14 by DW
 //init stuff in localStorage
 	if (localStorage.riverStats == undefined) {
 		localStorage.riverStats = new Object ();
-		localStorage.riverStats.idsSeen = new Object ();
 		localStorage.riverStats.ctStories = 0;
 		localStorage.riverStats.whenLastStory = new Date (0);
 		localStorage.riverStats.ctRiverChecks = 0;
 		localStorage.riverStats.whenLastCheck = new Date (0);
+		localStorage.riverStats.idsSeen = new Object ();
 		}
 	riverStats = localStorage.riverStats;
 
