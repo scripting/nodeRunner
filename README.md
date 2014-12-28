@@ -15,11 +15,11 @@ The files are not cached, so you can make changes while Noderunner is running.
 
 They share data through a structure called localStorage, which works more or less like localStorage in browsers. It doesn't have a file size limit, but it's a good idea to keep it small, because it's potentially saved every second. 
 
-It automatically creates all the folders it needs when it boots up.
+It automatically creates the folders it needs when it boots up.
 
 #### Example
 
-Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when Noderunner starts up, because it's in the startup sub-folder of scripts.
+Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when Noderunner starts up.
 
 #### Special folders
 
