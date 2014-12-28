@@ -33,9 +33,8 @@ Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/st
 
 The server provides three endpoints: version, now and status, that tell you what version is running, what the current time is on the server, and echoes the contents of the prefs and stats structs. 
 #### Why folders?
-I like Dropbox. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or easily moved. With folders, I can manage my scripts from any of my Dropbox-capable computers, which includes my desktop, laptop, tablet and smartphone. 
-Node.js plus Dropbox-managed folder structures is an incredible combination of technologies. Very simple yet powerful.
-BTW, when I say Dropbox, I mean all manner of systems that do more or less the same thing, synchronizing folders across devices. 
+I like file sharing software like Dropbox, Box, Google Drive, OneDrive, BT Sync. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or easily moved. With folders, I can manage my scripts from any of my Dropbox-capable computers, which includes my desktop, laptop, tablet and smartphone. 
+Node.js plus shared folder structures is an incredible combination of technologies. Very simple yet powerful and it works.
 #### Why did you develop it?
 I need it.
 #### How do you know it's useful?

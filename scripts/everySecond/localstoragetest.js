@@ -6,3 +6,6 @@ if (localStorage.ctEverySeconds == undefined) {
 else {
 	localStorage.ctEverySeconds++;
 	}
+
+
+
