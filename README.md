@@ -17,9 +17,13 @@ They share data through a structure called localStorage, which works more or les
 
 It automatically creates the folders it needs when it boots up.
 
-#### Example
+#### Examples
 
-Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when Noderunner starts up.
+1. Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when Noderunner starts up.
+
+2. <a href="https://github.com/scripting/noderunner/blob/master/scripts/everyMinute/rivertoconsole.js">RiverToConsole</a> runs every minute and checks a JSON file produced by River4, and echoes new items to the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
+
+3. A simple <a href="https://github.com/scripting/noderunner/blob/master/scripts/overnight/snapshot.js">example</a> that takes a snapshot of the Scripting News feed once a day.
 
 #### Special folders
 
@@ -33,14 +37,12 @@ Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/st
 
 The server provides three endpoints: version, now and status, that tell you what version is running, what the current time is on the server, and echoes the contents of the prefs and stats structs. 
 #### Why folders?
-I like file sharing software like Dropbox, Box, Google Drive, OneDrive, BT Sync. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or easily moved. With folders, I can manage my scripts from any of my Dropbox-capable computers, which includes my desktop, laptop, tablet and smartphone. 
-Node.js plus shared folder structures is an incredible combination of technologies. Very simple yet powerful and it works.
+I like file sharing software like Dropbox, Box, Google Drive, OneDrive, BT Sync. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or moved. With folders, I can manage my scripts from any of my sharing-capable computers, which includes my desktop, laptop, tablet and smartphone. 
 #### Why did you develop it?
 I need it.
 #### How do you know it's useful?
 This is an adaptation of a core feature in <a href="http://hellofrontier.com/">Frontier</a>, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
 
-There's an <a href="https://github.com/scripting/noderunner/blob/master/scripts/everyMinute/rivertoconsole.js">example app</a> in the everyMinute folder in the repository that reads a River4 file every minute and echoes the titles of NY Times stories on the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
 
 #### JavaScript sample code
 
