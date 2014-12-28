@@ -9,9 +9,7 @@ It was written by <a href="http://scripting.com/">Dave Winer</a>, and is the fir
 <img src="http://scripting.com/2014/12/27/snacks.png" width="145" height="143" border="0" align="right" alt="A picture named snacks.png">Copy noderunner.js to a folder with a single sub-folder: scripts. 
 In scripts, there are four sub-folders, everySecond, everyMinute, everyHour, overnight and startup. You can use the examples in the scripts folder here as examples to help you get started.
 
-Any file with a .js extension in those folders are loaded and run when it's their time. 
-
-All other files are ignored.
+Any file with a .js extension in those folders are loaded and run when it's their time. All other files are ignored.
 
 The files are not cached, so you can make changes while Noderunner is running.
 
