@@ -43,7 +43,6 @@ The server provides three endpoints: version, now and status, that tell you what
 #### How do you know it's useful?
 This is an adaptation of a core feature in <a href="http://hellofrontier.com/">Frontier</a>, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
 
-
 #### JavaScript sample code
 
 I've iterated over the code to try to make it good sample code for JavaScript projects. 
@@ -51,5 +50,11 @@ I've iterated over the code to try to make it good sample code for JavaScript pr
 I wanted to make code that could be used for people who are just getting started with Node, to help make the process easier.
 
 There will always be more work to do here. ;-)
+
+#### Questions, comments?
+
+Please post a note on the <a href="https://groups.google.com/forum/#!forum/server-snacks">Server Snacks</a> mail list. 
+
+
 
 
