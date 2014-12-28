@@ -23,7 +23,7 @@ It automatically creates the folders it needs when it boots up.
 
 2. <a href="https://github.com/scripting/noderunner/blob/master/scripts/everyMinute/rivertoconsole.js">RiverToConsole</a> runs every minute and checks a JSON file produced by River4, and echoes new items to the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
 
-3. A simple <a href="https://github.com/scripting/noderunner/blob/master/scripts/overnight/snapshot.js">example</a> that takes a snapshot of the Scripting News feed once a day.
+3. <a href="https://github.com/scripting/noderunner/blob/master/scripts/overnight/snapshot.js">Snapshot</a> archives the Scripting News feed once a day in a calendar folder structure.
 
 #### Special folders
 
