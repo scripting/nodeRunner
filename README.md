@@ -17,6 +17,10 @@ They share data through a structure called localStorage, which works more or les
 
 It automatically creates all the folders it needs when it boots up.
 
+#### Example
+
+Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when Noderunner starts up, because it's in the startup sub-folder of scripts.
+
 #### Special folders
 
 1. *files* contains files that are accessed through three routines provided by Noderunner: fileExists, readWholeFile and writeWholeFile. Note, you can use any of Node's <a href="http://nodejs.org/api/fs.html">fs</a> routines to read or write to any file on the local system. 
@@ -37,7 +41,7 @@ The server provides three endpoints: version, now and status, that tell you what
 #### How do you know it's useful?
 This is an adaptation of a core feature in <a href="http://hellofrontier.com/">Frontier</a>, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
 
-There's an example app in the everyMinute folder in the repository that reads a River4 file every minute and echoes the titles of NY Times stories on the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
+There's an <a href="https://github.com/scripting/noderunner/blob/master/scripts/everyMinute/rivertoconsole.js">example app</a> in the everyMinute folder in the repository that reads a River4 file every minute and echoes the titles of NY Times stories on the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
 
 #### JavaScript sample code
 
