@@ -20,7 +20,7 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.55", myProductName = "Noderunner";
+var myVersion = "0.56", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -272,6 +272,9 @@ function readStats (f, stats, callback) {
 			}
 		else {
 			writeStats (f, stats);
+			if (callback != undefined) {
+				callback ();
+				}
 			}
 		});
 	}
