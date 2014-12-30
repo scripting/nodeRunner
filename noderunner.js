@@ -20,12 +20,14 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.56", myProductName = "Noderunner";
+var myVersion = "0.57", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
+
+var folderPathFromEnv = process.env.folderPath; //12/30/14 by DW
 
 var noderunnerPrefs = {
 	myPort: 80,
@@ -49,10 +51,11 @@ var everySecondScriptsFolderName = "everySecond";
 var everyMinuteScriptsFolderName = "everyMinute";
 var everyHourScriptsFolderName = "everyHour";
 var overnightScriptsFolderName = "overnight";
-var webScriptsFolderName = "web";
 var userFilesPath = "files/";
 
 var lastLocalStorageJson;
+
+
 
 
 //routines from utils.js, fs.js
@@ -81,6 +84,29 @@ var lastLocalStorageJson;
 		var now = new Date ();
 		when = new Date (when);
 		return ((now - when) / 1000);
+		}
+	function beginsWith (s, possibleBeginning, flUnicase) { 
+		if (s.length == 0) { //1/1/14 by DW
+			return (false);
+			}
+		if (flUnicase == undefined) {
+			flUnicase = true;
+			}
+		if (flUnicase) {
+			for (var i = 0; i < possibleBeginning.length; i++) {
+				if (s [i].toLowerCase () != possibleBeginning [i].toLowerCase ()) {
+					return (false);
+					}
+				}
+			}
+		else {
+			for (var i = 0; i < possibleBeginning.length; i++) {
+				if (s [i] != possibleBeginning [i]) {
+					return (false);
+					}
+				}
+			}
+		return (true);
 		}
 	function endsWith (s, possibleEnding, flUnicase) {
 		if ((s == undefined) || (s.length == 0)) { 
@@ -206,6 +232,19 @@ var lastLocalStorageJson;
 			}
 		}
 //functions that are useful to scripts run from one of the folders
+	function getFullFilePath (relpath) { //12/30/14 by DW
+		var folderpath = folderPathFromEnv;
+		if (folderpath == undefined) { //the environment variable wasn't specified
+			return (relpath);
+			}
+		if (!endsWith (folderpath, "/")) {
+			folderpath += "/";
+			}
+		if (beginsWith (relpath, "/")) {
+			relpath = stringDelete (relpath, 1, 1);
+			}
+		return (folderpath + relpath);
+		}
 	function httpReadUrl (url, callback) {
 		request (url, function (error, response, body) {
 			if (!error && (response.statusCode == 200)) {
@@ -214,13 +253,13 @@ var lastLocalStorageJson;
 			});
 		}
 	function fileExists (f, callback) {
-		var path = userFilesPath + f;
+		var path = getFullFilePath (userFilesPath + f);
 		fs.exists (path, function (flExists) {
 			callback (flExists);
 			});
 		}
 	function readWholeFile (f, callback) {
-		var path = userFilesPath + f;
+		var path = getFullFilePath (userFilesPath + f);
 		fsSureFilePath (path, function () {
 			fs.readFile (path, function (err, data) {
 				if (callback != undefined) {
@@ -230,7 +269,7 @@ var lastLocalStorageJson;
 			});
 		}
 	function writeWholeFile (f, data, callback) {
-		var path = userFilesPath + f;
+		var path = getFullFilePath (userFilesPath + f);
 		fsSureFilePath (path, function () {
 			fs.writeFile (path, data, function (err) {
 				if (callback != undefined) {
@@ -243,15 +282,17 @@ var lastLocalStorageJson;
 		}
 
 function writeStats (fname, stats) {
-	fsSureFilePath (fname, function () {
-		fs.writeFile (fname, jsonStringify (stats), function (err) {
+	var f = getFullFilePath (fname);
+	fsSureFilePath (f, function () {
+		fs.writeFile (f, jsonStringify (stats), function (err) {
 			if (err) {
 				console.log ("writeStats: error == " + err.message);
 				}
 			});
 		});
 	}
-function readStats (f, stats, callback) {
+function readStats (fname, stats, callback) {
+	var f = getFullFilePath (fname);
 	fs.exists (f, function (flExists) {
 		if (flExists) {
 			fs.readFile (f, function (err, data) {
@@ -263,7 +304,7 @@ function readStats (f, stats, callback) {
 					for (var x in storedStats) {
 						stats [x] = storedStats [x];
 						}
-					writeStats (f, stats);
+					writeStats (fname, stats);
 					}
 				if (callback != undefined) {
 					callback ();
@@ -271,7 +312,7 @@ function readStats (f, stats, callback) {
 				});
 			}
 		else {
-			writeStats (f, stats);
+			writeStats (fname, stats);
 			if (callback != undefined) {
 				callback ();
 				}
@@ -294,7 +335,7 @@ function runUserScript (s, scriptName) {
 		}
 	}
 function runScriptsInFolder (foldername, callback) {
-	var path = userScriptsPath + foldername;
+	var path = getFullFilePath (userScriptsPath + foldername);
 	if (!endsWith (path, "/")) {
 		path += "/";
 		}
@@ -415,6 +456,11 @@ function startup () {
 			readStats (fnameStats, noderunnerStats, function () {
 				var now = new Date ();
 				console.log (myProductName + " v" + myVersion + ".");
+				
+				if (folderPathFromEnv != undefined) { //12/30/14 by DW
+					console.log ("Data and scripts are in: " + folderPathFromEnv);
+					}
+				
 				noderunnerStats.ctStarts++;
 				noderunnerStats.whenLastStart = now;
 				writeStats (fnameStats, noderunnerStats);
