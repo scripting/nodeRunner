@@ -26,6 +26,8 @@ var fs = require ("fs");
 var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
+var domain = require ("domain");
+var vm = require ("vm");
 
 var noderunnerPrefs = {
 	myPort: 80,
@@ -54,6 +56,36 @@ var userFilesPath = "files/";
 
 var lastLocalStorageJson;
 
+function sandbox() {
+	var context = {
+		getBoolean: getBoolean,
+		jsonStringify: jsonStringify,
+		secondsSince: secondsSince,
+		endsWith: endsWith, 
+		stringContains: stringContains,
+		stringCountFields: stringCountFields,
+		stringDelete: stringDelete,
+		stringMid: stringMid,
+		stringNthField: stringNthField,
+		padWithZeros: padWithZeros,
+		getDatePath: getDatePath,
+		fsSureFilePath: fsSureFilePath,
+		httpReadUrl: httpReadUrl,
+		fileExists: fileExists,
+		readWholeFile: readWholeFile,
+		writeWholeFile: writeWholeFile,
+		runUserScript: runUserScript,
+		runScriptsInFolder: runScriptsInFolder,
+		runUserScript: runUserScript,
+		localStorage: localStorage
+	};
+
+	for (var property in global) {
+		context[property] = global[property];
+	}
+
+	return context;
+}
 
 //routines from utils.js, fs.js
 	function getBoolean (val) {  
@@ -246,7 +278,7 @@ function writeStats (fname, stats) {
 	fsSureFilePath (fname, function () {
 		fs.writeFile (fname, jsonStringify (stats), function (err) {
 			if (err) {
-				console.log ("writeStats: error == " + err.message);
+				console.error ("writeStats: error == " + err.message);
 				}
 			});
 		});
@@ -256,7 +288,7 @@ function readStats (f, stats, callback) {
 		if (flExists) {
 			fs.readFile (f, function (err, data) {
 				if (err) {
-					console.log ("readStats: error reading file " + f + " == " + err.message)
+					console.error ("readStats: error reading file " + f + " == " + err.message)
 					}
 				else {
 					var storedStats = JSON.parse (data.toString ());
@@ -286,12 +318,17 @@ function writeLocalStorageIfChanged () {
 		}
 	}
 function runUserScript (s, scriptName) {
-	try {
-		eval (s);
-		}
-	catch (err) {
-		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
-		}
+	var userScriptDomain = domain.create();
+
+	userScriptDomain.on('error', function (err) {
+		console.error ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
+		console.error (err.stack);
+		});
+
+	userScriptDomain.run(function () {
+		// fourth (undocumented) argument provide extensive syntax warnings
+		vm.runInNewContext(s, sandbox(), scriptName, true);
+		});
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = userScriptsPath + foldername;
@@ -309,7 +346,7 @@ function runScriptsInFolder (foldername, callback) {
 					var f = path + fname;
 					fs.readFile (f, function (err, data) {
 						if (err) {
-							console.log ("runScriptsInFolder: error == " + err.message);
+							console.error ("runScriptsInFolder: error == " + err.message);
 							}
 						else {
 							runUserScript (data.toString (), f);
