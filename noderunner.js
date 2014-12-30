@@ -246,7 +246,7 @@ function writeStats (fname, stats) {
 	fsSureFilePath (fname, function () {
 		fs.writeFile (fname, jsonStringify (stats), function (err) {
 			if (err) {
-				console.log ("writeStats: error == " + err.message);
+				console.error ("writeStats: error == " + err.message);
 				}
 			});
 		});
@@ -256,7 +256,7 @@ function readStats (f, stats, callback) {
 		if (flExists) {
 			fs.readFile (f, function (err, data) {
 				if (err) {
-					console.log ("readStats: error reading file " + f + " == " + err.message)
+					console.error ("readStats: error reading file " + f + " == " + err.message)
 					}
 				else {
 					var storedStats = JSON.parse (data.toString ());
@@ -290,7 +290,7 @@ function runUserScript (s, scriptName) {
 		eval (s);
 		}
 	catch (err) {
-		console.log ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
+		console.error ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
 		}
 	}
 function runScriptsInFolder (foldername, callback) {
@@ -309,7 +309,7 @@ function runScriptsInFolder (foldername, callback) {
 					var f = path + fname;
 					fs.readFile (f, function (err, data) {
 						if (err) {
-							console.log ("runScriptsInFolder: error == " + err.message);
+							console.error ("runScriptsInFolder: error == " + err.message);
 							}
 						else {
 							runUserScript (data.toString (), f);
