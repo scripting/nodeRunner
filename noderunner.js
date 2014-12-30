@@ -27,6 +27,7 @@ var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
 var domain = require ("domain");
+var vm = require ("vm");
 
 var noderunnerPrefs = {
 	myPort: 80,
@@ -55,6 +56,36 @@ var userFilesPath = "files/";
 
 var lastLocalStorageJson;
 
+function sandbox() {
+	var context = {
+		getBoolean: getBoolean,
+		jsonStringify: jsonStringify,
+		secondsSince: secondsSince,
+		endsWith: endsWith, 
+		stringContains: stringContains,
+		stringCountFields: stringCountFields,
+		stringDelete: stringDelete,
+		stringMid: stringMid,
+		stringNthField: stringNthField,
+		padWithZeros: padWithZeros,
+		getDatePath: getDatePath,
+		fsSureFilePath: fsSureFilePath,
+		httpReadUrl: httpReadUrl,
+		fileExists: fileExists,
+		readWholeFile: readWholeFile,
+		writeWholeFile: writeWholeFile,
+		runUserScript: runUserScript,
+		runScriptsInFolder: runScriptsInFolder,
+		runUserScript: runUserScript,
+		localStorage: localStorage
+	};
+
+	for (var property in global) {
+		context[property] = global[property];
+	}
+
+	return context;
+}
 
 //routines from utils.js, fs.js
 	function getBoolean (val) {  
@@ -294,7 +325,10 @@ function runUserScript (s, scriptName) {
 		console.error (err.stack);
 		});
 
-	userScriptDomain.run(function () { eval (s); })
+	userScriptDomain.run(function () {
+		// fourth (undocumented) argument provide extensive syntax warnings
+		vm.runInNewContext(s, sandbox(), scriptName, true);
+		});
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = userScriptsPath + foldername;
