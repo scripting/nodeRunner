@@ -26,6 +26,7 @@ var fs = require ("fs");
 var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
+var domain = require ("domain");
 
 var noderunnerPrefs = {
 	myPort: 80,
@@ -286,12 +287,14 @@ function writeLocalStorageIfChanged () {
 		}
 	}
 function runUserScript (s, scriptName) {
-	try {
-		eval (s);
-		}
-	catch (err) {
+	var userScriptDomain = domain.create();
+
+	userScriptDomain.on('error', function (err) {
 		console.error ("runUserScript: error running \"" + scriptName + "\" == " + err.message);
-		}
+		console.error (err.stack);
+		});
+
+	userScriptDomain.run(function () { eval (s); })
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = userScriptsPath + foldername;
