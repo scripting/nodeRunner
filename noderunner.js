@@ -20,14 +20,14 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.57", myProductName = "Noderunner";
+var myVersion = "0.58", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
 
-var folderPathFromEnv = process.env.folderPath; //12/30/14 by DW
+var folderPathFromEnv = process.env.noderunnerFolderPath; //12/30/14 by DW
 
 var noderunnerPrefs = {
 	myPort: 80,

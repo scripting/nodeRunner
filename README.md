@@ -57,7 +57,7 @@ There will always be more work to do here. ;-)
 
 ##### v0.57 12/30/14 by DW
 
-New environment variable, folderPath, lets you set the folder Noderunner runs from, i.e. where it looks for scripts, prefs, and where it stores its data. See this <a href="http://noderunner.smallpict.com/2014/12/30/noderunnerV057.html">blog post</a> on this release, including general philosophy of Noderunner.
+New environment variable, noderunnerFolderPath, lets you set the folder Noderunner runs from, i.e. where it looks for scripts, prefs, and where it stores its data. See this <a href="http://noderunner.smallpict.com/2014/12/30/noderunnerV057.html">blog post</a> on this release, including general philosophy of Noderunner.
 
 #### Questions, comments?
 
