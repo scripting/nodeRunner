@@ -20,7 +20,7 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.58", myProductName = "Noderunner";
+var myVersion = "0.59", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -33,8 +33,10 @@ var noderunnerPrefs = {
 	myPort: 80,
 	secondToRunEveryMinuteScripts: 0,
 	minuteToRunHourlyScripts: 0,
-	hourToRunOvernightScripts: 0
+	hourToRunOvernightScripts: 0, 
+	nameScriptsFolder: "scripts" //1/3/15 by DW
 	};
+
 var noderunnerStats = {
 	ctStarts: 0, whenLastStart: new Date (0),
 	ctStatsReadErrors: 0, ctStatsReads: 0, 
@@ -45,7 +47,6 @@ var localStorage = {
 	};
 var fnameStats = "prefs/stats.json", fnamePrefs  = "prefs/prefs.json",  fnameLocalStorage = "prefs/localStorage.json";
 
-var userScriptsPath = "scripts/";
 var startupScriptsFolderName = "startup";
 var everySecondScriptsFolderName = "everySecond";
 var everyMinuteScriptsFolderName = "everyMinute";
@@ -335,7 +336,7 @@ function runUserScript (s, scriptName) {
 		}
 	}
 function runScriptsInFolder (foldername, callback) {
-	var path = getFullFilePath (userScriptsPath + foldername);
+	var path = getFullFilePath (noderunnerPrefs.nameScriptsFolder + "/" + foldername);
 	if (!endsWith (path, "/")) {
 		path += "/";
 		}
