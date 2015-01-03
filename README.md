@@ -41,7 +41,7 @@ The server provides three endpoints: version, now and status, that tell you what
 #### Why folders?
 I like file sharing software like Dropbox, Box, Google Drive, OneDrive, BT Sync. I've built a few pieces of software over the years based on the idea of storing all the data in folder structures. This means that pieces of the app can easily be distributed among a variety of machines, or moved. With folders, I can manage my scripts from any of my sharing-capable computers, which includes my desktop, laptop, tablet and smartphone. 
 #### Why did you develop it?
-I need it.
+<a href="http://noderunner.smallpict.com/2015/01/03/whyINeededNoderunner.html">I needed it</a>.
 #### How do you know it's useful?
 This is an adaptation of a core feature in <a href="http://hellofrontier.com/">Frontier</a>, a scripting and object database environment I led the development of. Now that I'm working primarily in Node, I wanted the same ability to quickly add and edit scripts that are constantly running on net-accessible systems. 
 
