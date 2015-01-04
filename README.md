@@ -5,7 +5,7 @@ Noderunner
 
 It's the <a href="http://scripting.com/2014/12/28/forReviewNoderunner.html">first</a> of a series of "server snacks" that will come out in early 2015. 
 
-<a href="http://scripting.com/">Dave Winer</a> 
+<a href="http://noderunner.smallpict.com/2015/01/03/whyINeededNoderunner.html">Dave Winer</a>, January 2015
 
 #### How it works
 <img src="http://scripting.com/2014/12/28/snacks.png" width="145" height="143" border="0" align="right" alt="A picture named snacks.png">Copy noderunner.js to a folder with a single sub-folder: scripts. 
