@@ -20,7 +20,7 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.59", myProductName = "Noderunner";
+var myVersion = "0.60", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -90,7 +90,7 @@ var lastLocalStorageJson;
 		if (s.length == 0) { //1/1/14 by DW
 			return (false);
 			}
-		if (flUnicase == undefined) {
+		if (flUnicase === undefined) {
 			flUnicase = true;
 			}
 		if (flUnicase) {
@@ -110,11 +110,11 @@ var lastLocalStorageJson;
 		return (true);
 		}
 	function endsWith (s, possibleEnding, flUnicase) {
-		if ((s == undefined) || (s.length == 0)) { 
+		if ((s === undefined) || (s.length == 0)) { 
 			return (false);
 			}
 		var ixstring = s.length - 1;
-		if (flUnicase == undefined) {
+		if (flUnicase === undefined) {
 			flUnicase = true;
 			}
 		if (flUnicase) {
@@ -134,7 +134,7 @@ var lastLocalStorageJson;
 		return (true);
 		}
 	function stringContains (s, whatItMightContain, flUnicase) { 
-		if (flUnicase == undefined) {
+		if (flUnicase === undefined) {
 			flUnicase = true;
 			}
 		if (flUnicase) {
@@ -180,13 +180,13 @@ var lastLocalStorageJson;
 		return (s);
 		}
 	function getDatePath (theDate, flLastSeparator) {
-		if (theDate == undefined) {
+		if (theDate === undefined) {
 			theDate = new Date ();
 			}
 		else {
 			theDate = new Date (theDate); //8/12/14 by DW -- make sure it's a date type
 			}
-		if (flLastSeparator == undefined) {
+		if (flLastSeparator === undefined) {
 			flLastSeparator = true;
 			}
 		
@@ -202,7 +202,8 @@ var lastLocalStorageJson;
 			}
 		}
 	function fsSureFilePath (path, callback) { 
-		var splits = path.split ("/"), path = "";
+		var splits = path.split ("/");
+		path = ""; //1/8/15 by DW
 		if (splits.length > 0) {
 			function doLevel (levelnum) {
 				if (levelnum < (splits.length - 1)) {
@@ -235,7 +236,7 @@ var lastLocalStorageJson;
 //functions that are useful to scripts run from one of the folders
 	function getFullFilePath (relpath) { //12/30/14 by DW
 		var folderpath = folderPathFromEnv;
-		if (folderpath == undefined) { //the environment variable wasn't specified
+		if (folderpath === undefined) { //the environment variable wasn't specified
 			return (relpath);
 			}
 		if (!endsWith (folderpath, "/")) {

@@ -9,7 +9,7 @@ function sendTweet (s) { //doesn't do anything for now -- 12/27/14 by DW
 	}
 
 //init stuff in localStorage
-	if (localStorage.riverStats == undefined) {
+	if (localStorage.riverStats === undefined) {
 		localStorage.riverStats = new Object ();
 		localStorage.riverStats.ctStories = 0;
 		localStorage.riverStats.whenLastStory = new Date (0);
@@ -32,7 +32,7 @@ httpReadUrl (urlRiver, function (s) {
 		var feed = feeds [i];
 		for (var j = 0; j < feed.item.length; j++) {
 			var item = feed.item [j];
-			if (riverStats.idsSeen [item.id] == undefined) {
+			if (riverStats.idsSeen [item.id] === undefined) {
 				if ((!flAtMostOneTweetPerMinute) || flNoTweetsSentYet) {
 					var flTitleInArray = false;
 					for (var x in riverStats.idsSeen) { //set flTitleInArray
