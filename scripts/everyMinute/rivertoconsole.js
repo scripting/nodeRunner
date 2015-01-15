@@ -24,8 +24,8 @@ httpReadUrl (urlRiver, function (s) {
 	for (var x in riverStats.idsSeen) { //create idsStruct -- at the end it will contain ids that in the array, but not in the river
 		idsStruct [x] = true;
 		}
-	s = stringDelete (s, 1, prefix.length);
-	s = stringMid (s, 1, s.length - 1); //pop off right paren at end
+	s = utils.stringDelete (s, 1, prefix.length);
+	s = utils.stringMid (s, 1, s.length - 1); //pop off right paren at end
 	var jstruct = JSON.parse (s);
 	var feeds = jstruct.updatedFeeds.updatedFeed;
 	for (var i = 0; i < feeds.length; i++) {

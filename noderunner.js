@@ -20,12 +20,13 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.60", myProductName = "Noderunner";
+var myVersion = "0.61", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
+var utils = require ("./lib/utils.js");
 
 var folderPathFromEnv = process.env.noderunnerFolderPath; //12/30/14 by DW
 
@@ -59,148 +60,7 @@ var lastLocalStorageJson;
 
 
 
-//routines from utils.js, fs.js
-	function getBoolean (val) {  
-		switch (typeof (val)) {
-			case "string":
-				if (val.toLowerCase () == "true") {
-					return (true);
-					}
-				break;
-			case "boolean":
-				return (val);
-				break;
-			case "number":
-				if (val != 0) {
-					return (true);
-					}
-				break;
-			}
-		return (false);
-		}
-	function jsonStringify (jstruct) { 
-		return (JSON.stringify (jstruct, undefined, 4));
-		}
-	function secondsSince (when) { 
-		var now = new Date ();
-		when = new Date (when);
-		return ((now - when) / 1000);
-		}
-	function beginsWith (s, possibleBeginning, flUnicase) { 
-		if (s.length == 0) { //1/1/14 by DW
-			return (false);
-			}
-		if (flUnicase === undefined) {
-			flUnicase = true;
-			}
-		if (flUnicase) {
-			for (var i = 0; i < possibleBeginning.length; i++) {
-				if (s [i].toLowerCase () != possibleBeginning [i].toLowerCase ()) {
-					return (false);
-					}
-				}
-			}
-		else {
-			for (var i = 0; i < possibleBeginning.length; i++) {
-				if (s [i] != possibleBeginning [i]) {
-					return (false);
-					}
-				}
-			}
-		return (true);
-		}
-	function endsWith (s, possibleEnding, flUnicase) {
-		if ((s === undefined) || (s.length == 0)) { 
-			return (false);
-			}
-		var ixstring = s.length - 1;
-		if (flUnicase === undefined) {
-			flUnicase = true;
-			}
-		if (flUnicase) {
-			for (var i = possibleEnding.length - 1; i >= 0; i--) {
-				if (s [ixstring--].toLowerCase () != possibleEnding [i].toLowerCase ()) {
-					return (false);
-					}
-				}
-			}
-		else {
-			for (var i = possibleEnding.length - 1; i >= 0; i--) {
-				if (s [ixstring--] != possibleEnding [i]) {
-					return (false);
-					}
-				}
-			}
-		return (true);
-		}
-	function stringContains (s, whatItMightContain, flUnicase) { 
-		if (flUnicase === undefined) {
-			flUnicase = true;
-			}
-		if (flUnicase) {
-			s = s.toLowerCase ();
-			whatItMightContain = whatItMightContain.toLowerCase ();
-			}
-		return (s.indexOf (whatItMightContain) != -1);
-		}
-	function stringCountFields (s, chdelim) {
-		var ct = 1;
-		if (s.length == 0) {
-			return (0);
-			}
-		for (var i = 0; i < s.length; i++) {
-			if (s [i] == chdelim) {
-				ct++;
-				}
-			}
-		return (ct)
-		}
-	function stringNthField (s, chdelim, n) {
-		var splits = s.split (chdelim);
-		if (splits.length >= n) {
-			return splits [n-1];
-			}
-		return ("");
-		}
-	function stringDelete (s, ix, ct) {
-		var start = ix - 1;
-		var end = (ix + ct) - 1;
-		var s1 = s.substr (0, start);
-		var s2 = s.substr (end);
-		return (s1 + s2);
-		}
-	function stringMid (s, ix, len) {
-		return (s.substr (ix-1, len));
-		}
-	function padWithZeros (num, ctplaces) { 
-		var s = num.toString ();
-		while (s.length < ctplaces) {
-			s = "0" + s;
-			}
-		return (s);
-		}
-	function getDatePath (theDate, flLastSeparator) {
-		if (theDate === undefined) {
-			theDate = new Date ();
-			}
-		else {
-			theDate = new Date (theDate); //8/12/14 by DW -- make sure it's a date type
-			}
-		if (flLastSeparator === undefined) {
-			flLastSeparator = true;
-			}
-		
-		var month = padWithZeros (theDate.getMonth () + 1, 2);
-		var day = padWithZeros (theDate.getDate (), 2);
-		var year = theDate.getFullYear ();
-		
-		if (flLastSeparator) {
-			return (year + "/" + month + "/" + day + "/");
-			}
-		else {
-			return (year + "/" + month + "/" + day);
-			}
-		}
+//routines from fs.js
 	function fsSureFilePath (path, callback) { 
 		var splits = path.split ("/");
 		path = ""; //1/8/15 by DW
@@ -239,11 +99,11 @@ var lastLocalStorageJson;
 		if (folderpath === undefined) { //the environment variable wasn't specified
 			return (relpath);
 			}
-		if (!endsWith (folderpath, "/")) {
+		if (!utils.endsWith (folderpath, "/")) {
 			folderpath += "/";
 			}
-		if (beginsWith (relpath, "/")) {
-			relpath = stringDelete (relpath, 1, 1);
+		if (utils.beginsWith (relpath, "/")) {
+			relpath = utils.stringDelete (relpath, 1, 1);
 			}
 		return (folderpath + relpath);
 		}
@@ -286,7 +146,7 @@ var lastLocalStorageJson;
 function writeStats (fname, stats) {
 	var f = getFullFilePath (fname);
 	fsSureFilePath (f, function () {
-		fs.writeFile (f, jsonStringify (stats), function (err) {
+		fs.writeFile (f, utils.jsonStringify (stats), function (err) {
 			if (err) {
 				console.log ("writeStats: error == " + err.message);
 				}
@@ -322,7 +182,7 @@ function readStats (fname, stats, callback) {
 		});
 	}
 function writeLocalStorageIfChanged () {
-	var s = jsonStringify (localStorage);
+	var s = utils.jsonStringify (localStorage);
 	if (s != lastLocalStorageJson) {
 		lastLocalStorageJson = s;
 		writeStats (fnameLocalStorage, localStorage); 
@@ -338,17 +198,17 @@ function runUserScript (s, scriptName) {
 	}
 function runScriptsInFolder (foldername, callback) {
 	var path = getFullFilePath (noderunnerPrefs.nameScriptsFolder + "/" + foldername);
-	if (!endsWith (path, "/")) {
+	if (!utils.endsWith (path, "/")) {
 		path += "/";
 		}
 	fsSureFilePath (path, function () {
 		fs.readdir (path, function (err, list) {
-			if (!endsWith (path, "/")) {
+			if (!utils.endsWith (path, "/")) {
 				path += "/";
 				}
 			for (var i = 0; i < list.length; i++) {
 				var fname = list [i];
-				if (endsWith (fname.toLowerCase (), ".js")) {
+				if (utils.endsWith (fname.toLowerCase (), ".js")) {
 					var f = path + fname;
 					fs.readFile (f, function (err, data) {
 						if (err) {
@@ -372,9 +232,9 @@ function handleHttpRequest (httpRequest, httpResponse) {
 		var lowerpath = parsedUrl.pathname.toLowerCase (), now = new Date ();
 		//set host, port
 			host = httpRequest.headers.host;
-			if (stringContains (host, ":")) {
-				port = stringNthField (host, ":", 2);
-				host = stringNthField (host, ":", 1);
+			if (utils.stringContains (host, ":")) {
+				port = utils.stringNthField (host, ":", 2);
+				host = utils.stringNthField (host, ":", 1);
 				}
 		console.log (now.toLocaleTimeString () + " " + httpRequest.method + " " + host + ":" + port + " " + lowerpath);
 		switch (lowerpath) {
@@ -392,7 +252,7 @@ function handleHttpRequest (httpRequest, httpResponse) {
 					status: noderunnerStats
 					}
 				httpResponse.writeHead (200, {"Content-Type": "text/plain"});
-				httpResponse.end (jsonStringify (status));    
+				httpResponse.end (utils.jsonStringify (status));    
 				break;
 			default:
 				httpResponse.writeHead (404, {"Content-Type": "text/plain"});
@@ -454,7 +314,7 @@ function everySecond () {
 function startup () {
 	readStats (fnamePrefs, noderunnerPrefs, function () {
 		readStats (fnameLocalStorage, localStorage, function () {
-			lastLocalStorageJson = jsonStringify (localStorage);
+			lastLocalStorageJson = utils.jsonStringify (localStorage);
 			readStats (fnameStats, noderunnerStats, function () {
 				var now = new Date ();
 				console.log (myProductName + " v" + myVersion + ".");
