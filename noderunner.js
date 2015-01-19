@@ -20,7 +20,7 @@
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
 
-var myVersion = "0.61", myProductName = "Noderunner";
+var myVersion = "0.62", myProductName = "Noderunner";
 
 var fs = require ("fs");
 var request = require ("request");
@@ -134,13 +134,14 @@ var lastLocalStorageJson;
 		var path = getFullFilePath (userFilesPath + f);
 		fsSureFilePath (path, function () {
 			fs.writeFile (path, data, function (err) {
+				if (err) {
+					console.log ("writeWholeFile: error == " + err.message);
+					}
 				if (callback != undefined) {
 					callback (err);
 					}
 				});
 			});
-		
-		
 		}
 
 function writeStats (fname, stats) {
