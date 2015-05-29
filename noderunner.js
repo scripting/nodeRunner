@@ -1,4 +1,6 @@
-//The MIT License (MIT)
+var myVersion = "0.62", myProductName = "Noderunner";
+
+	//The MIT License (MIT) 
 	
 	//Copyright (c) 2014 Dave Winer
 	
@@ -19,8 +21,9 @@
 	//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	//SOFTWARE.
-
-var myVersion = "0.62", myProductName = "Noderunner";
+	
+	//structured listing: http://scripting.com/listings/noderunner.html
+	
 
 var fs = require ("fs");
 var request = require ("request");
