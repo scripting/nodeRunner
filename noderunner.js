@@ -1,4 +1,4 @@
-var myVersion = "0.62", myProductName = "Noderunner";
+var myVersion = "0.64a", myProductName = "nodeRunner";
 
 	//The MIT License (MIT) 
 	
@@ -30,6 +30,7 @@ var request = require ("request");
 var urlpack = require ("url");
 var http = require ("http");
 var utils = require ("./lib/utils.js");
+var s3 = require ("./lib/s3.js");
 
 var folderPathFromEnv = process.env.noderunnerFolderPath; //12/30/14 by DW
 
