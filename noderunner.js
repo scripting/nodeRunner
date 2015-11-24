@@ -1,4 +1,4 @@
-var myVersion = "0.64a", myProductName = "nodeRunner";
+var myVersion = "0.64b", myProductName = "nodeRunner";
 
 	//The MIT License (MIT) 
 	
@@ -27,6 +27,7 @@ var myVersion = "0.64a", myProductName = "nodeRunner";
 
 var fs = require ("fs");
 var request = require ("request");
+var querystring = require ("querystring"); //11/24/15 by DW
 var urlpack = require ("url");
 var http = require ("http");
 var utils = require ("./lib/utils.js");
