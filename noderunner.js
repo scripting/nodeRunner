@@ -1,4 +1,4 @@
-var myVersion = "0.64b", myProductName = "nodeRunner";
+var myVersion = "0.65a", myProductName = "nodeRunner"; 
 
 	//The MIT License (MIT) 
 	

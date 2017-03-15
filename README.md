@@ -1,4 +1,4 @@
-#### nodeRunner
+### nodeRunner
 
 <a href="http://noderunner.org/">nodeRunner</a> is a Node.js server app that runs scripts every second, minute, hour or overnight, each group in its own folder. 
 
@@ -61,6 +61,10 @@ I wanted to make code that could be used for people who are just getting started
 There will always be more work to do here. ;-)
 
 #### Updates
+
+##### v0.65 3/15/17 by DW
+
+Moved the example scripts out of the everySecond, everyMinute etc folders and into a new examples folder. When you install a noderRunner it should come with no scripts running. 
 
 ##### v0.64 11/19/15 by DW
 

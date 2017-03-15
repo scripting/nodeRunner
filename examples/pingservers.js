@@ -1,13 +1,12 @@
 var urls = [
-	"twitter.littlecardeditor.com",
-	"twitter.littleoutliner.com",
-	"twitter.liveblog.co",
-	"twitter.macwrite.org",
-	"twitter.myword.io",
-	"twitter.noteblog.io",
-	"twitter.podcatch.com",
-	"twitter.porkchop.io",
-	"twitter.radio3.io",
+	"twitter2.littlecardeditor.com:5341",
+	"twitter2.liveblog.co:5345",
+	"twitter2.macwrite.org:5339",
+	"twitter2.myword.io:5343",
+	"twitter2.noteblog.io:5346",
+	"twitter2.podcatch.com:5344",
+	"twitter2.porkchop.io:5340",
+	"twitter2.radio3.io:5342",
 	"river4b.herokuapp.com",
 	"river4a.herokuapp.com",
 	"riverforpodcatch.herokuapp.com"
@@ -18,6 +17,7 @@ function pingOne (ix) {
 	if (ix >= 0) {
 		var url = "http://" + urls [ix] + "/now", whenstart = new Date ();
 		httpReadUrl (url, function (s) {
+			console.log ("ping " + url + ", " + utils.secondsSince (whenstart) + " secs.");
 			pingOne (ix - 1);
 			});
 		}
