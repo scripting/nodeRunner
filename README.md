@@ -1,4 +1,4 @@
-### nodeRunner
+## nodeRunner
 
 <a href="http://noderunner.org/">nodeRunner</a> is a Node.js server app that runs scripts every second, minute, hour or overnight, each group in its own folder. 
 
@@ -22,11 +22,11 @@ It automatically creates the folders it needs when it boots up.
 
 #### Examples
 
-1. Here's a <a href="https://github.com/scripting/noderunner/blob/master/scripts/startup/hello.js">Hello World</a> script that runs when nodeRunner starts up.
+1. Here's a <a href="https://github.com/scripting/noderunner/blob/master/examples/startup/hello.js">Hello World</a> script that runs when nodeRunner starts up.
 
-2. <a href="https://github.com/scripting/noderunner/blob/master/scripts/everyMinute/rivertoconsole.js">RiverToConsole</a> runs every minute and checks a JSON file produced by River4, and echoes new items to the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
+2. <a href="https://github.com/scripting/noderunner/blob/master/examples/everyMinute/rivertoconsole.js">RiverToConsole</a> runs every minute and checks a JSON file produced by River4, and echoes new items to the console. It's part of a real app that I use to maintain <a href="https://twitter.com/nyt">@NYT</a> on Twitter. 
 
-3. <a href="https://github.com/scripting/noderunner/blob/master/scripts/overnight/snapshot.js">Snapshot</a> archives the Scripting News feed once a day in a calendar folder structure.
+3. <a href="https://github.com/scripting/noderunner/blob/master/examples/overnight/snapshot.js">Snapshot</a> archives the Scripting News feed once a day in a calendar folder structure.
 
 #### Special folders
 
