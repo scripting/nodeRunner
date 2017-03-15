@@ -64,7 +64,7 @@ There will always be more work to do here. ;-)
 
 ##### v0.65 3/15/17 by DW
 
-Moved the example scripts out of the everySecond, everyMinute etc folders and into a new examples folder. When you install a noderRunner it should come with no scripts running. 
+Moved the example scripts into a <a href="https://github.com/scripting/nodeRunner/tree/master/examples">new folder</a>. When you install a noderRunner it should come with no scripts running. 
 
 ##### v0.64 11/19/15 by DW
 
