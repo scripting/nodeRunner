@@ -2,7 +2,7 @@
 
 <a href="http://noderunner.org/">nodeRunner</a> is a Node.js server app that runs scripts every second, minute, hour or overnight, each group in its own folder. 
 
-It's the <a href="http://scripting.com/2014/12/28/forReviewNoderunner.html">first</a> of a series of "server snacks" that will come out in early 2015. 
+It's the <a href="http://scripting.com/2014/12/28/forReviewNoderunner.html">first</a> of a series of "server snacks" that came out in early 2015. 
 
 <a href="http://noderunner.smallpict.com/2015/01/03/whyINeededNoderunner.html">Dave Winer</a>
 
