@@ -2,13 +2,16 @@
 	"name": "nodeRunner",
 	"description": "A Node.js app that runs scripts every second, minute, hour or day, each group in its own folder.",
 	"author": "Dave Winer <dave@smallpicture.com>",
-	"version": "0.64.0",
+	"version": "0.7.1",
 	"scripts": {
 		"start": "node noderunner.js"
 			},
 	"dependencies" : {
 		"aws-sdk": "*", 
-		"request": "*"
+		"request": "*",
+		"daveutils": "*", 
+		"daves3": "*", 
+		"davehttp": "*"
 		}, 
 	"license": "MIT",
 	"engines": {
